@@ -4,6 +4,7 @@ import pandas as pd
 #returns 2d array containing the data per plate
 def getPosData(numberPlates,filePath):
     allPosData = []
+    i = 0
     with open(filePath, 'r') as file:
         lines = file.readlines()
         #print(lines)
@@ -24,5 +25,6 @@ def getPosData(numberPlates,filePath):
     return allPosData
 
 
-def convert2xls(numberPlates,fileName):
-    pass
+def convert2xls(numberPlates,fileName,filePath):
+    allPosData = getPosData(numberPlates,filePath)
+    
