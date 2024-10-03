@@ -1,6 +1,4 @@
 import pandas as pd
-#TODO remove singleplate, do everything in a single file
-#Seems that doing this with arrays is a bad idea, so move this into an object
 
 #returns 2d array containing the data per plate
 def getPosData(numberPlates, filePath):
@@ -20,31 +18,34 @@ def getPosData(numberPlates, filePath):
             allPosData.append(storePosData) 
     return allPosData
 
-
 def convert2xls(allPosData, fileName):
-    for plate in allPosData:
-        plateData = []
-        for vec in plate:
-            position = vec[0][0]
-            data = vec[0][1]
-            alpha = ""
-            number = ""
+    try:
+        with pd.ExcelWriter(f'{fileName}.xlsx') as writer:
+            for index, plate in enumerate(allPosData):
+                plateData = []
+                for vec in plate:
+                    position = vec[0][0]
+                    data = vec[0][1]
+                    alpha = ""
+                    number = ""
 
-            for char in position:
-                if char.isalpha():
-                    alpha += char
-                elif char.isdigit():
-                    number += char
-                
-            data = {
-                'data': data,
-                'y' : alpha,
-                'x' :number
-            }   
+                    for char in position:
+                        if char.isalpha():
+                            alpha += char
+                        elif char.isdigit():
+                            number += char
 
-            plateData.append(data)
-        
-        df = pd.DataFrame(plateData)
-        df['data'] = pd.to_numeric(df['data']) #make sure that excel recognizes the data as a number not a string
-        pivotdf = df.pivot(index='y', columns='x', values='data') #had to rearrange to get proper format
-        pivotdf.to_excel(f'{fileName}.xlsx', index=False)  #can only be xlsx, xls engine is missing?
+                    data_entry = {
+                        'data': data,
+                        'y': alpha,
+                        'x': number
+                    }   
+
+                    plateData.append(data_entry)
+
+                df = pd.DataFrame(plateData)
+                df['data'] = pd.to_numeric(df['data']) #make sure that excel recognizes the data as a number not a string
+                pivotdf = df.pivot(index='y', columns='x', values='data')  #had to rearrange to get proper format
+                pivotdf.to_excel(writer, sheet_name=f'Plate{index + 1}', index=False) #can only be xlsx, xls engine is missing?
+    except Exception as e:
+        print(f"Failed to write xlsx file: {e}")
