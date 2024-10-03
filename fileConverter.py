@@ -9,6 +9,9 @@ import multiPlate as mp
         #2.2.2
     pip install openpyxl
         #3.1.5
+    pip install XlsxWriter
+        #3.2.0
+
     TODO: Currrently only works for 1 plate, make it work for infinite
 
 """
@@ -50,13 +53,13 @@ def main():
         fileName = input(str("Enter the name of the file you want to convert (ex: name.txt): "))
         filePath = os.path.join(dataFolderPath, fileName)
         if os.path.isfile(filePath):
-            print(f"Creating {fileName}.xlsx")
             fileName = fileName.rstrip(".txt")
+            print(f"Creating {fileName}.xlsx")
             #previewTxt(filePath)
             totalNumberOfPlates = findTotalPlates(filePath)
             if totalNumberOfPlates == 1:
-                posData = sp.getPosData(filePath)
-                sp.convert2xls(posData,fileName)
+                posData = mp.getPosData(totalNumberOfPlates,filePath)
+                mp.convert2xls(posData,fileName)
                 print("Completed.")
         else:
             print(f"The file '{fileName}' does not exist in the 'data' folder.")
